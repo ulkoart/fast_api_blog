@@ -1,6 +1,15 @@
 version: '3'
 
 services:
+  db:
+    image: postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=blog
+
   api:
     build: .
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -8,3 +17,16 @@ services:
     - ./src:/code
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
